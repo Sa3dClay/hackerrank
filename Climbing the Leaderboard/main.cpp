@@ -18,29 +18,25 @@ vector<string> split(const string &);
 vector<int> climbingLeaderboard(vector<int> ranked, vector<int> player) {
     vector<int> ranks;
     
-    bool inRank;
-    int rank, diff, lastDiff;
-    for(int i=0; i<player.size(); i++) {
-        // reset values
-        rank = 1;
-        inRank = false;
-        lastDiff = player[i] - ranked[0];
-        for(int j=0; j<ranked.size(); j++) {
-            diff = player[i] - ranked[j];
-            // increase the current rank level
-            if(diff > lastDiff) {
-                lastDiff = diff;
-                rank++;
-            }
-            // stop if break the record
-            if(diff >= 0) {
-                inRank = true;
+    // remove duplicates from ranked
+    ranked.erase(unique(ranked.begin(), ranked.end()), ranked.end());
+    
+    // start ranking from backward
+    int prevRank = ranked.size() - 1;
+    
+    // loop over player scores
+    for(int i = 0; i < player.size(); i++) {
+        // loop over ranked backward & ignore pre broken ranks
+        for(int j = prevRank; j >= 0; j--) {
+            // check if player break the record
+            if(player[i] < ranked[j]) {
                 break;
+            } else {
+                prevRank--;
             }
         }
-        // add new rank if out of rank list
-        !inRank ? rank++ : rank;
-        ranks.push_back(rank);
+        // push new rank as index+1 (index = j+1)
+        ranks.push_back(prevRank + 2);
     }
     
     return ranks;
